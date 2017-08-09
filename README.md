@@ -1,6 +1,6 @@
-redBus API Rest with Nodejs
+API Rest with Nodejs
 ===========================
 
 To add the remote repo:
 
-Nodejs Api Rest
+Shopping Cart RESTful API with MEAN
