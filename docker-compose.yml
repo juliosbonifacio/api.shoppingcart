@@ -1,0 +1,35 @@
+version: '2'
+
+networks:
+  core:
+    driver: bridge
+
+services:
+  web:
+    build: .
+    image: redbus/ubuntu-nodejs
+    container_name: apirest.sc
+    ports:
+     - "3000:3000"
+     - "5858:5858"
+     - "8080:8080"
+    volumes:
+     - ./:/srv/app/web
+     - /srv/app/web/node_modules
+     - /srv/app/web/public
+     - /srv/app/web/uploads
+    links:
+     - mongo
+    environment:
+     - NODE_ENV=development
+     - DB_1_PORT_27017_TCP_ADDR=mongo
+    depends_on:
+     - mongo
+    networks:
+     - core
+  mongo:
+    image: mongo:3.4
+    networks:
+     - core
+    ports:
+     - "27018:27017"

@@ -1,0 +1,19 @@
+{
+  "name": "APIRest",
+  "description": "API Rest with MongoDB, Express, AngularJS, and Node.js.",
+  "version": "0.0.1",
+  "private": true,
+  "main": "server.js",
+  "keywords": [
+    "RESTful",
+    "API",
+    "Demo"
+  ],
+  "author": "Julio Bonifacio",
+  "dependencies": {
+    "express": "latest",
+    "mongoose": "latest",
+    "body-parser": "latest",
+    "socket.io": "latest"
+  }
+}
