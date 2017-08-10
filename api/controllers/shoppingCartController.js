@@ -40,10 +40,19 @@ exports.update_a_product = function(req, res) {
 };
 // Product.remove({}).exec(function(){});
 exports.delete_a_product = function(req, res) {
+    //Check if the product was used in a cart
+    Cart.findOne({entries: {$elemMatch: {idProduct: mongoose.Types.ObjectId(req.body.idProduct)}}},
+        function (err, cart) {
+            if (err)
+                res.send(err);
+            if (cart) {
+                return res.status(200).send({
+                    message: 'ProductIsUsed'
+                });
+            }
+        });
 
-    Product.remove({
-        _id: req.params.productId
-    }, function(err, product) {
+    Product.remove({_id: req.params.productId}, function(err, product) {
         if (err)
             res.send(err);
         res.json({ message: 'Product successfully deleted' });
@@ -110,9 +119,23 @@ exports.buyCart = function(req, res) {
 
 /* Add product to cart */
 exports.addProductToCart = function(req, res) {
+    //Check if objectId is valid
+    if (!mongoose.Types.ObjectId.isValid(req.body.idCart)) {
+        return res.status(400).send({
+            message: 'Cart Id is invalid'
+        });
+    }
+    if (!mongoose.Types.ObjectId.isValid(req.body.idProduct)) {
+        return res.status(400).send({
+            message: 'Product Id is invalid'
+        });
+    }
+
     //Check if Cart if exist
     Cart.findById(req.body.idCart, function(err, cart) {
-        if (err){
+        if (err)
+            res.send(err);
+        if (!cart) {
             return res.status(404).send({
                 message: 'CarritoNoExiste'
             });
@@ -125,12 +148,24 @@ exports.addProductToCart = function(req, res) {
             });
         }
 
+        //check if product exist
+        Product.findById(req.body.idProduct, function(err, product) {
+            if (err) {
+                res.send(err);
+            }
+            if (!product) {
+                return res.status(404).send({
+                    message: 'ProductoNoExiste'
+                });
+            }
+        });
+
         //Update the entries
         var existProduct = false;
         if (cart.entries.length > 0) {
             for (var i = 0, len = cart.entries.length; i < len; i++) {
                 if (cart.entries[i].idProduct.toString() == req.body.idProduct) {
-                    cart.entries[i].quantity = parseInt(cart.entries[i].quantity) + parseInt(req.body.quantity);
+                    cart.entries[i].quantity = parseInt(req.body.quantity);
                     existProduct = true;
                 }
             }
@@ -156,9 +191,23 @@ exports.addProductToCart = function(req, res) {
     });
 };
 exports.removeProductFromCart = function(req, res) {
+    //Check if objectId is valid
+    if (!mongoose.Types.ObjectId.isValid(req.body.idCart)) {
+        return res.status(400).send({
+            message: 'Cart Id is invalid'
+        });
+    }
+    if (!mongoose.Types.ObjectId.isValid(req.body.idProduct)) {
+        return res.status(400).send({
+            message: 'Product Id is invalid'
+        });
+    }
+
     //Check if Cart if exist
     Cart.findById(req.body.idCart, function(err, cart) {
-        if (err){
+        if (err)
+            res.send(err);
+        if (!cart) {
             return res.status(404).send({
                 message: 'CarritoNoExiste'
             });
