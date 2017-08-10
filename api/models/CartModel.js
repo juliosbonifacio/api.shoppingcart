@@ -5,20 +5,26 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var CartSchema = new Schema({
-    ProductLists: {
+    status: {
         type: String,
-        Required: 'Kindly enter the product lists'
+        default: 'pending'
     },
+    entries: [
+        {
+            idProduct: {
+                type: Schema.ObjectId,
+                ref: 'Product'
+            },
+            quantity: {
+                type: Number,
+                min: 0,
+                max:99999
+            }
+        }
+    ],
     created: {
         type: Date,
         default: Date.now
-    },
-    status: {
-        type: [{
-            type: String,
-            enum: ['paid', 'pending', 'error']
-        }],
-        default: ['pending']
     }
 });
 
