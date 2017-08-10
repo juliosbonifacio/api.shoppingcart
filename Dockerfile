@@ -34,3 +34,7 @@ COPY . /srv/app/web
 
 # Run MEAN.JS server
 CMD npm install && npm start
+
+# Project sources
+RUN usermod -u 1000 www-data \
+    && chown www-data -R /node_modules /public /uploads
