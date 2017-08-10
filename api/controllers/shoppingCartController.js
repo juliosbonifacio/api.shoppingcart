@@ -57,7 +57,6 @@ exports.createCart = function(req, res) {
     newCart.save(function(err, cart) {
         if (err)
             res.send(err);
-        console.log(cart);
         res.json(cart);
     });
 };
@@ -112,7 +111,7 @@ exports.buyCart = function(req, res) {
 /* Add product to cart */
 exports.addProductToCart = function(req, res) {
     //Check if Cart if exist
-    Cart.findOne({_id:req.params.cartId, entries: {$exists: true, $ne: []}}, function(err, cart) {
+    Cart.findById(req.body.idCart, function(err, cart) {
         if (err){
             return res.status(404).send({
                 message: 'CarritoNoExiste'
@@ -128,19 +127,20 @@ exports.addProductToCart = function(req, res) {
 
         //Update the entries
         var existProduct = false;
-        cart.entries.forEach(function(entry){
-            //When product exits
-            if (entry.idProduct == '123'){
-                entry.quantity = entry.quantity + 1;
-            } else {
-                existProduct = true;
+        if (cart.entries.length > 0) {
+            for (var i = 0, len = cart.entries.length; i < len; i++) {
+                if (cart.entries[i].idProduct.toString() == req.body.idProduct) {
+                    cart.entries[i].quantity = parseInt(cart.entries[i].quantity) + parseInt(req.body.quantity);
+                    existProduct = true;
+                }
             }
-        });
+        }
 
-        if (existProduct) {
-            var entry = [];
-            entry.idProduct = '123';
-            entry.quantity = 1;
+        if (!existProduct) {
+            var entry = {
+                "idProduct": mongoose.Types.ObjectId(req.body.idProduct),
+                "quantity":parseInt(req.body.quantity)
+            };
             cart.entries.push(entry);
         }
 
@@ -156,11 +156,46 @@ exports.addProductToCart = function(req, res) {
     });
 };
 exports.removeProductFromCart = function(req, res) {
-    Cart.findOneAndUpdate({_id:req.params.cartId}, req.body, {new: true}, function(err, cart) {
-        if (err) {
-            console.log('addProductToCart:');console.log(err);
-            res.send(err);
+    //Check if Cart if exist
+    Cart.findById(req.body.idCart, function(err, cart) {
+        if (err){
+            return res.status(404).send({
+                message: 'CarritoNoExiste'
+            });
         }
-        res.json(cart);
+
+        //Cart is paid
+        if (cart.status == 'paid') {
+            return res.status(200).send({
+                message: 'CarritoVendido'
+            });
+        }
+
+        //Check if the product exist
+        var existProduct = false;
+        if (cart.entries.length > 0) {
+            for (var i = 0, len = cart.entries.length; i < len; i++) {
+                if (cart.entries[i].idProduct.toString() == req.body.idProduct) {
+                    cart.entries.splice(i,1);
+                    existProduct = true;
+                }
+            }
+        }
+
+        if (!existProduct) {
+            return res.status(404).send({
+                message: 'ProductoNoExiste'
+            });
+        }
+
+        cart.save(function (err) {
+            if (err) {
+                return res.status(422).send({
+                    message: 'There was an error during save the add product to cart'
+                });
+            } else {
+                res.json(cart);
+            }
+        });
     });
 };

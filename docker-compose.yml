@@ -6,6 +6,7 @@ networks:
 
 services:
   web:
+    restart: always
     build: .
     image: redbus/ubuntu-nodejs
     container_name: apirest.sc
