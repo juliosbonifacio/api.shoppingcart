@@ -1,19 +1,27 @@
 {
   "name": "APIRest",
-  "description": "API Rest with MongoDB, Express, AngularJS, and Node.js.",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "API Rest with MongoDB, Express, AngularJS, Node.js and jwt.",
   "private": true,
   "main": "server.js",
   "keywords": [
     "RESTful",
     "API",
-    "Demo"
+    "MEAN",
+    "jwt",
+    "nodejs",
+    "demo"
   ],
-  "author": "Julio Bonifacio",
+  "author": "Julio Bonifacio <juliosbonifacio@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juliosbonifacio/mean-jwt-restapi.git"
+  },
   "dependencies": {
     "express": "latest",
     "mongoose": "latest",
     "body-parser": "latest",
+    "jsonwebtoken": "latest",
     "socket.io": "latest"
   }
 }
